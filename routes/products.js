@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
+/*
 const products = [
   { id: 1, name: 'Black Boots' },
   { id: 2, name: 'White Boots' },
@@ -30,6 +31,95 @@ const price = {
   11: 255.99,
   12: 319.99
 };
+*/
+
+const products = [
+    {
+        id: 1,
+        name: "Black Boots",
+        description: "Boots that are Black",
+        price: 59.99,
+        image: "images/boots1.jpg"
+    },
+    {
+        id: 2,
+        name: "White Boots",
+        description: "Boots that are White",
+        price: 89.99,
+        image: "images/boots2.jpg"
+    },
+    {
+        id: 3,
+        name: "Pink Gloves",
+        description: "Gloves that are Pink",
+        price: 32.99,
+        image: "images/gloves1.jpg"
+    },
+    {
+        id: 4,
+        name: "Yellow Gloves",
+        description: "Gloves that are Yellow",
+        price: 26.99,
+        image: "images/gloves2.jpg"
+    },
+    {
+        id: 5,
+        name: "Rainbow Goggles",
+        description: "Goggles that are Rainbow",
+        price: 66.99,
+        image: "images/goggles1.jpg"
+    },
+    {
+        id: 6,
+        name: "Silver Goggles",
+        description: "Goggles that are Silver",
+        price: 99.99,
+        image: "images/goggles2.jpg"
+    },
+    {
+        id: 7,
+        name: "Green Helmet",
+        description: "Helmet that is Green",
+        price: 120.99,
+        image: "images/helmet1.jpg"
+    },
+    {
+        id: 8,
+        name: "Blue Helmet",
+        description: "Helmet that is Blue",
+        price: 100.99,
+        image: "images/helmet2.jpg"
+    },
+    {
+        id: 9,
+        name: "Blue Jacket",
+        description: "Jacket that is Blue",
+        price: 230.99,
+        image: "images/jacket1.jpg"
+    },
+    {
+        id: 10,
+        name: "Yellow Jacket",
+        description: "Jacket that is Yellow",
+        price: 180.99,
+        image: "images/jacket2.jpg"
+    },
+    {
+        id: 11,
+        name: "Orange Snowboard",
+        description: "Snowboard that is Orange",
+        price: 255.99,
+        image: "images/snowboard1.jpg"
+    },
+    {
+        id: 12,
+        name: "White Snowboard",
+        description: "Snowboard that is White",
+        price: 319.99,
+        image: "images/snowboard2.jpg"
+    }
+
+];
 
 router.get('/', (req, res) => {
   res.json(products);
@@ -43,7 +133,7 @@ router.get('/:productId', (req, res) => {
     res.status(404).json({ error: 'Product not found' });
   }
 });
-
+/*
 router.get('/:productId/price', (req, res) => {
   const productId = req.params.productId;
   const productPrices = price[productId];
@@ -53,5 +143,6 @@ router.get('/:productId/price', (req, res) => {
     res.status(404).json({ error: 'Price not found for product' });
   }
 });
+*/
 
 module.exports = router;

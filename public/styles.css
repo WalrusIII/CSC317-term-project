@@ -60,6 +60,16 @@
     object-fit: cover;    /* Crop the image to fill the box */
     border-radius: 8px;    /* Optional: for a clean look */
 }
+
+.cartIcon{
+    justify-content: left;
+}
+.cartIcon img {
+    width: 120px;
+    height: 60px;
+    background-color: whitesmoke;
+    border-radius: 40px;
+}
 /*
 #productImage{
     max-width: 300px;

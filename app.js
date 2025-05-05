@@ -1,29 +1,13 @@
 const express = require('express');
 const app = express();
 
+// Tell Express to use EJS
 app.set('view engine', 'ejs');
+// Set the directory for view templates
 app.set('views', './views');
+
 app.use(express.static('public'));
 
-/*
-const algorithms = {
-  decisionTree: {
-      name: "Decision Tree",
-      application: "Classification tasks in medical diagnosis",
-      history: "Introduced in the 1960s in pattern recognition research."
-  },
-  kMeans: {
-      name: "K-Means Clustering",
-      application: "Customer segmentation in marketing",
-      history: "First introduced by Stuart Lloyd in 1957."
-  },
-  neuralNetwork: {
-      name: "Neural Networks",
-      application: "Image and speech recognition",
-      history: "Popularized in the 1980s with backpropagation."
-  }
-};
-*/
 
 const products = {
   blackBoots: {
@@ -98,8 +82,117 @@ const products = {
     price: 319.99,
     image: "images/snowboard2.jpg"
   },
-  
 };
+
+
+
+// set up link to each product page (in the /views folder)
+app.get('/product/:key', (req, res) => {
+  const key = req.params.key;
+  const product = products[key];
+  if (product) {
+    res.render('productPage', { product, productKey: key }); // ← add productKey here
+  } else {
+    res.status(404).send('Product not found');
+  }
+});
+
+
+
+
+// Routes
+
+app.get('/', (req, res) => {
+  res.render('index', { products });
+});
+
+//const userRoutes = require('./routes/users');
+const productRoutes = require('./routes/products');
+
+//app.use('/users', userRoutes);
+app.use('/products', productRoutes);
+
+
+// SQL / Database
+const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
+const dbPath = path.join(__dirname, 'data', 'database.db');
+const db = new sqlite3.Database(dbPath);
+
+
+
+// attempt at add to cart button
+app.post('/add-to-cart/:key', (req, res) => {
+  const productKey = req.params.key;
+  const product = products[productKey];
+
+  if (!product) {
+    return res.status(404).send('Product not found');
+  }
+
+  db.get('SELECT quantity FROM cart WHERE productKey = ?', [productKey], (err, row) => {
+    if (err) return res.status(500).send('DB error');
+
+    if (row) {
+      db.run(
+        'UPDATE cart SET quantity = quantity + 1 WHERE productKey = ?',
+        [productKey],
+        (err) => {
+          if (err) return res.status(500).send('Update failed');
+          res.status(200).send('Updated');
+        }
+      );
+    } else {
+      db.run(
+        'INSERT INTO cart (productKey, quantity, price) VALUES (?, ?, ?)',
+        [productKey, 1, product.price],
+        (err) => {
+          if (err) return res.status(500).send('Insert failed');
+          res.status(200).send('Inserted');
+        }
+      );
+    }
+  });
+});
+
+// remove from cart button
+app.post('/remove-from-cart/:key', (req, res) => {
+  const productKey = req.params.key;
+
+  db.get('SELECT quantity FROM cart WHERE productKey = ?', [productKey], (err, row) => {
+    if (err) return res.status(500).send('DB error');
+
+    if (!row) {
+      return res.status(404).send('Item not in cart');
+    }
+
+    if (row.quantity > 1) {
+      db.run('UPDATE cart SET quantity = quantity - 1 WHERE productKey = ?', [productKey], (err) => {
+        if (err) return res.status(500).send('Failed to update quantity');
+        res.redirect('/cart');
+      });
+    } else {
+      db.run('DELETE FROM cart WHERE productKey = ?', [productKey], (err) => {
+        if (err) return res.status(500).send('Failed to delete item');
+        res.redirect('/cart');
+      });
+    }
+  });
+});
+
+
+// get info from cart database
+app.get('/cart', (req, res) => {
+  db.all('SELECT productKey, quantity, price FROM cart', (err, rows) => {
+    if (err) return res.status(500).send('DB error');
+
+    // You can also enrich cart items with full product info if needed
+    res.render('shoppingCart', { cartItems: rows });
+  });
+});
+
+
+
 
 /*
 document.getElementById('addToCart').addEventListener('click', async () => {
@@ -118,62 +211,9 @@ document.getElementById('addToCart').addEventListener('click', async () => {
 });
 */
 
-/*
-app.get('/', (req, res) => {
-  res.render('index', { algorithms });
-});
-*/
-
-app.get('/', (req, res) => {
-  res.render('index', { products });
-});
-
-/*
-app.get('/product/:key', (req, res) => {
-  const product = products[req.params.key];
-  if (product) {
-      res.render('factsheet', { product });
-  } else {
-      res.status(404).send('Algorithm not found');
-  }
-});
-*/
-
-app.get('/product/:key', (req, res) => {
-  const key = req.params.key;
-  const product = products[key];
-  if (product) {
-    res.render('productPage', { product, productKey: key }); // ← add productKey here
-  } else {
-    res.status(404).send('Product not found');
-  }
-});
 
 
 /*
-// Tell Express to use EJS
-app.set('view engine', 'ejs');
-
-// Optional: Set the directory for view templates
-app.set('views', './views');
-
-app.get('/', (req, res) => {
-    res.render('index', {
-        title: 'Home Page',
-        username: 'Ada Lovelace'
-    });
-});
-
-*/
-// Routes
-//const userRoutes = require('./routes/users');
-const productRoutes = require('./routes/products');
-
-//app.use('/users', userRoutes);
-app.use('/products', productRoutes);
-
-
-
 app.post('/add-to-cart/:key', (req, res) => {
   const productKey = req.params.key;
 
@@ -198,7 +238,7 @@ app.post('/add-to-cart/:key', (req, res) => {
   });
 });
 
-
+*/
 
 
 
